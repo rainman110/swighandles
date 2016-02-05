@@ -5,12 +5,19 @@
 A::A() {
   printf("A::A()\n");
   count = 0;
+  alive = new bool(true);
 }
 
-A::~A() { printf("A::~A()\n"); }
+A::~A() {
+  printf("A::~A()\n");
+
+  *alive=false;
+  delete alive;
+  alive = NULL;
+}
 
 void A::DoSomething() const {
-    printf("A::do_something(): My refcount is %d\n", count);
+    printf("A::do_something(): I am alive %d\n", *alive);
 }
 
 int A::RefCount() {

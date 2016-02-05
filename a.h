@@ -1,6 +1,8 @@
 #ifndef A_H
 #define A_H
 
+#include <cstdio>
+
 class Handle_A;
 
 class A {
@@ -20,6 +22,7 @@ private:
 
 private:
   int count;
+  bool* alive;
 };
 
 /**
@@ -44,6 +47,29 @@ public:
 
 private:
   A *a;
+};
+
+/**
+ * A class that mimics e.g. GeomAPI_PointsToBSpline
+ */
+class ABuilder {
+public:
+  ABuilder() {
+    ah = new A();
+  }
+  ~ABuilder() {
+    printf("ABuilder::~ABuilder()\n");
+  }
+
+  Handle_A& GetHandleARef() {
+    return ah;
+  }
+
+  Handle_A GetHandleACopy() {
+    return ah;
+  }
+private:
+  Handle_A ah;
 };
 
 /**
