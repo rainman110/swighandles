@@ -1,80 +1,113 @@
 #ifndef A_H
 #define A_H
 
+#include "Standard_Transient.h"
+
 #include <cstdio>
+#include <memory>
+#include <string>
+
+#define Handle(CLS) Handle_##CLS
 
 class Handle_A;
 
-class A {
-  friend class Handle_A;
-
+class A : public Standard_Transient
+{
 public:
-  A();
-  ~A();
+    A()
+        : value("NewA")
+    {
+    }
 
-  void DoSomething() const;
+    A(const std::string& s);
 
-  int RefCount();
+    // TODO: into derived class
+    void DoSomething() const;
+
+    std::string Value() const;
+    void setValue(const std::string& s)
+    {
+        value = s;
+    }
 
 private:
-  void IncRefs();
-  void DecRefs();
-
-private:
-  int count;
-  bool* alive;
+    std::string value;
 };
 
-/**
- * @brief Handle_A is a smart
- * pointer to class A as similarly done
- * in the OpenCASCADE framework
- *
- * Usage: Handle_A a = new A();
- */
-class Handle_A {
+class Handle_A : public Handle_Standard_Transient
+{
 public:
-  Handle_A();
-  Handle_A(A *a);
-  Handle_A(const Handle_A &h);
-  ~Handle_A();
+    Handle_A()
+        : Handle_Standard_Transient()
+    {
+    }
+    Handle_A(A* a)
+        : Handle_Standard_Transient(a)
+    {
+    }
 
-  Handle_A &operator=(const Handle_A &h);
+    Handle_A(Handle_Standard_Transient& other)
+        : Handle_Standard_Transient(other)
+    {
+    }
 
-  bool IsNull() const;
+    A* Access()
+    {
+        return (A*)Handle_Standard_Transient::Access();
+    }
 
-  A *GetObject();
+    A* operator->()
+    {
+        return Access();
+    }
 
-private:
-  A *a;
+    operator Handle_Standard_Transient&()
+    {
+        return *this;
+    }
 };
 
 /**
  * A class that mimics e.g. GeomAPI_PointsToBSpline
  */
-class ABuilder {
+class ABuilder
+{
 public:
-  ABuilder() {
-    ah = new A();
-  }
-  ~ABuilder() {
-    printf("ABuilder::~ABuilder()\n");
-  }
+    ABuilder()
+        : ah(new A("From Builder"))
+    {
+    }
+    ~ABuilder();
 
-  Handle_A& GetHandleARef() {
-    return ah;
-  }
+    Handle_A& GetHandleARef();
 
-  Handle_A GetHandleACopy() {
-    return ah;
-  }
+    Handle_A GetHandleACopy()
+    {
+        return ah;
+    }
+
+    A& GetARef()
+    {
+        return a;
+    }
+
 private:
-  Handle_A ah;
+    Handle_A ah;
+    A a;
 };
 
 /**
  * Simple function that requires a handle of a
  */
-void simpleFunction(Handle_A handle);
+void simpleFunctionHandle(Handle_A handle);
+void simpleFunctionHandleRef(Handle_A& handle);
+
+void simpleFunctionByRef(const A& a);
+
+Handle_A getHandleA();
+
+A getCopyA();
+
+A* createA();
 
 #endif // A_H

@@ -16,7 +16,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(standard SHARED a.cpp)
+add_library(standard STATIC a.cpp a.h Standard_Transient.h )
 
 set_source_files_properties(standard.i PROPERTIES CPLUSPLUS ON)
 
