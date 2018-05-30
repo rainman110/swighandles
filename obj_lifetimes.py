@@ -12,7 +12,7 @@ ah2.GetObject().DoSomething()
 ah2.GetHandle().DoSomething()
 ah2.DoSomething()
 
-# crashes since handleCopy is destroyed after GetObject call
+# All those should not crash!
 ABuilder().GetHandleACopy().GetObject().DoSomething()
 ABuilder().GetHandleACopy().DoSomething()
 ABuilder().GetHandleARef().DoSomething()
