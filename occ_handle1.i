@@ -4,7 +4,7 @@
 
 
 %{
-#include "Standard_Transient.h"
+#include <Standard_Transient.hxx>
 
 // The following is an evil hack to edit the reference counter of Standard_Transient
 template<typename Tag, typename Tag::type M>
@@ -16,7 +16,7 @@ struct Rob {
 
 // tag used to access A::count
 struct Standard_Transient_f { 
-  typedef int Standard_Transient::*type;
+  typedef volatile Standard_Integer Standard_Transient::*type;
   friend type get(Standard_Transient_f);
 };
 
@@ -38,6 +38,9 @@ void IncRef(Standard_Transient& a) {
 
     def GetObject(self):
         return self
+
+    def IsNull():
+      return self is None
    }
 }
 
@@ -70,10 +73,10 @@ void IncRef(Standard_Transient& a) {
   if (newmem & SWIG_CAST_NEW_MEMORY) {
     tempshared = *%reinterpret_cast(argp, Handle_ ## TYPE *);
     delete %reinterpret_cast(argp, Handle_ ## TYPE *);
-    $1 = %const_cast(tempshared.Access(), $1_ltype);
+    $1 = %const_cast(tempshared.operator->(), $1_ltype);
   } else {
     smartarg = %reinterpret_cast(argp, Handle_ ## TYPE *);
-    $1 = %const_cast((smartarg ? smartarg->Access() : 0), $1_ltype);
+    $1 = %const_cast((smartarg ? smartarg->operator->() : 0), $1_ltype);
   }
 }
 
@@ -88,9 +91,9 @@ void IncRef(Standard_Transient& a) {
   if (newmem & SWIG_CAST_NEW_MEMORY) {
     tempshared = *%reinterpret_cast(argp, Handle_ ## TYPE *);
     delete %reinterpret_cast(argp, Handle_ ## TYPE *);
-    $1 = %const_cast(tempshared.Access(), $1_ltype);
+    $1 = %const_cast(tempshared.operator->(), $1_ltype);
   } else {
-    $1 = %const_cast(%reinterpret_cast(argp, Handle_ ## TYPE *)->Access(), $1_ltype);
+    $1 = %const_cast(%reinterpret_cast(argp, Handle_ ## TYPE *)->operator->(), $1_ltype);
   }
 }
 
@@ -135,4 +138,20 @@ void IncRef(Standard_Transient& a) {
     #define SWIGEMPTYHACK
     WRAP_OCC_TRANSIENT_TYPE(SWIGEMPTYHACK, TYPE)
     WRAP_OCC_TRANSIENT_TYPE(const, TYPE)
+
+    // Allow to use e.g. Handle_Geom_Curve_DownCast(curve)
+    %inline %{
+        Handle_ ## TYPE Handle_ ## TYPE ## _DownCast(const Handle_Standard_Transient& t) {
+            return Handle_ ## TYPE ## ::DownCast(t);
+        }
+    %}
+
+    // Allow to use e.g. Handle_Geom_Curve.DownCast(curve)
+    %pythoncode {
+        class Handle_ ## TYPE():
+            @staticmethod
+            def DownCast(t):
+                return Handle_ ## TYPE ## _DownCast(t)
+    }
+
 %enddef

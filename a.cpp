@@ -93,3 +93,24 @@ Handle_A& ABuilder::GetHandleARef()
     write_log("ABuilder::GetHandleARef\n");
     return ah;
 }
+
+Handle_A getNone()
+{
+    return Handle_A();
+}
+
+Handle_Standard_Transient getHandleATransient()
+{
+    Handle_A ah = new A("HandleTransientA");
+    return ah;
+}
+
+Handle_Standard_Transient getHandleTransient()
+{
+    return new Standard_Transient();
+}
+
+Handle_A Handle_A::DownCast(const Handle_Standard_Transient& t)
+{
+    return dynamic_cast<A*>(const_cast<Standard_Transient*>(t.Access()));
+}

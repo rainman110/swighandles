@@ -7,9 +7,8 @@
 #include "a.h"
 %}
 
-
 %wrap_handle(Standard_Transient)
 %wrap_handle(A)
 
-%include "Standard_Transient.h"
+%include "Standard_Transient.hxx"
 %include "a.h"

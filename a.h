@@ -1,7 +1,7 @@
 #ifndef A_H
 #define A_H
 
-#include "Standard_Transient.h"
+#include "Standard_Transient.hxx"
 
 #include <cstdio>
 #include <memory>
@@ -17,6 +17,10 @@ public:
     A()
         : value("NewA")
     {
+    }
+    
+    A(const A& other) : Standard_Transient(other) {
+        value = other.value;
     }
 
     A(const std::string& s);
@@ -51,14 +55,11 @@ public:
     {
     }
 
-    A* Access()
-    {
-        return (A*)Handle_Standard_Transient::Access();
-    }
+    static Handle_A DownCast(const Handle_Standard_Transient&);
 
     A* operator->()
     {
-        return Access();
+        return static_cast<A*>(Access());
     }
 
     operator Handle_Standard_Transient&()
@@ -105,6 +106,12 @@ void simpleFunctionHandleRef(Handle_A& handle);
 void simpleFunctionByRef(const A& a);
 
 Handle_A getHandleA();
+
+Handle_A getNone();
+
+Handle_Standard_Transient getHandleATransient();
+
+Handle_Standard_Transient getHandleTransient();
 
 A getCopyA();
 

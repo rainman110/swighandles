@@ -1,4 +1,4 @@
-#include "Standard_Transient.h"
+#include "Standard_Transient.hxx"
 
 #include <cstdio>
 #include <cstdarg>
@@ -127,7 +127,22 @@ Standard_Transient* Handle_Standard_Transient::Access()
     return a;
 }
 
+const Standard_Transient* Handle_Standard_Transient::Access() const
+{
+    return a;
+}
+
 Standard_Transient* Handle_Standard_Transient::operator->()
 {
     return Access();
+}
+
+Standard_Transient& Handle_Standard_Transient::operator*()
+{
+    return *Access();
+}
+
+const Standard_Transient& Handle_Standard_Transient::operator*() const
+{
+    return *a;
 }

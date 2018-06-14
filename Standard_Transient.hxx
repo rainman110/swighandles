@@ -1,6 +1,8 @@
 #ifndef STANDARD_TRANSIENT_H
 #define STANDARD_TRANSIENT_H
 
+typedef int Standard_Integer; 
+
 /**
  * @brief This is a reference counted base class
  * In OpenCASCADE many classes are derived from it
@@ -22,7 +24,7 @@ private:
     void DecRefs();
 
 private:
-    int count;
+    volatile Standard_Integer count;
 
     bool* alive;
 };
@@ -47,7 +49,15 @@ public:
     bool IsNull() const;
 
     Standard_Transient* Access();
+    const Standard_Transient* Access() const;
     Standard_Transient* operator->();
+    Standard_Transient& operator*();
+    
+    const Standard_Transient& operator*() const;
+    
+    static Handle_Standard_Transient DownCast(const Handle_Standard_Transient& t) {
+        return const_cast<Handle_Standard_Transient&>(t);
+    }
 
 private:
     Standard_Transient* a;
