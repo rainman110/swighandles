@@ -174,3 +174,10 @@ void IncRef(Standard_Transient& a) {
         Handle_ ## TYPE = TYPE
     }
 %enddef
+                
+%define %add_missing_handle(C1, C2)
+    %{
+        DEFINE_STANDARD_HANDLE(C1, C2)
+        IMPLEMENT_STANDARD_HANDLE(C1, C2)
+    %}
+%enddef

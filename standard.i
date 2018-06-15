@@ -8,16 +8,15 @@
 #include "a.h"
 %}
 
-
-#if 1
+%add_missing_handle(C, Standard_Transient)
 %wrap_handle(Standard_Transient)
 %wrap_handle(A)
-#else
-%shared_ptr(Standard_Transient)
-%shared_ptr(A)
-#endif
+%wrap_handle(C)
 
 %include "Standard_Transient.hxx"
-%make_alias(Standard_Transient)
 %include "a.h"
+
+%make_alias(Standard_Transient)
 %make_alias(A)
+%make_alias(C)
+

@@ -20,3 +20,7 @@ print (standard.A(a))
 
 print (isinstance(a, standard.Handle_A))
 print (isinstance(a, standard.Handle_Standard_Transient))
+
+c = standard.C()
+print (isinstance(c, standard.Handle_Standard_Transient))
+standard.doWithC(c)

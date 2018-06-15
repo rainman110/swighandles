@@ -63,4 +63,45 @@ private:
     Standard_Transient* a;
 };
 
+template <class T>
+class handle : public Handle_Standard_Transient
+{
+public:
+    handle()
+        : Handle_Standard_Transient()
+    {
+    }
+    handle(T* t)
+        : Handle_Standard_Transient(t)
+    {
+    }
+
+    handle(Handle_Standard_Transient& other)
+        : Handle_Standard_Transient(other)
+    {
+    }
+
+    static handle<T> DownCast(const Handle_Standard_Transient& t)
+    {
+        return dynamic_cast<T*>(const_cast<Standard_Transient*>(t.Access()));
+    }
+
+    T* operator->()
+    {
+        return static_cast<T*>(Access());
+    }
+
+    operator Handle_Standard_Transient&()
+    {
+        return *this;
+    }
+};
+
+
+#define Handle(CLS) Handle_##CLS
+
+#define DEFINE_STANDARD_HANDLE(C1, C2) typedef handle<C1> Handle_ ## C1;
+#define IMPLEMENT_STANDARD_HANDLE(C1,C2)
+
+
 #endif // STANDARD_TRANSIENT_H

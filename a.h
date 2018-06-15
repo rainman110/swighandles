@@ -7,10 +7,6 @@
 #include <memory>
 #include <string>
 
-#define Handle(CLS) Handle_##CLS
-
-class Handle_A;
-
 class A : public Standard_Transient
 {
 public:
@@ -38,35 +34,7 @@ private:
     std::string value;
 };
 
-class Handle_A : public Handle_Standard_Transient
-{
-public:
-    Handle_A()
-        : Handle_Standard_Transient()
-    {
-    }
-    Handle_A(A* a)
-        : Handle_Standard_Transient(a)
-    {
-    }
-
-    Handle_A(Handle_Standard_Transient& other)
-        : Handle_Standard_Transient(other)
-    {
-    }
-
-    static Handle_A DownCast(const Handle_Standard_Transient&);
-
-    A* operator->()
-    {
-        return static_cast<A*>(Access());
-    }
-
-    operator Handle_Standard_Transient&()
-    {
-        return *this;
-    }
-};
+DEFINE_STANDARD_HANDLE(A, Standard_Transient)
 
 /**
  * A class that mimics e.g. GeomAPI_PointsToBSpline
@@ -97,6 +65,12 @@ private:
     A a;
 };
 
+class C : public Standard_Transient 
+{
+};
+
+void doWithC(const C&);
+
 /**
  * Simple function that requires a handle of a
  */
@@ -105,7 +79,7 @@ void simpleFunctionHandleRef(Handle_A& handle);
 
 void simpleFunctionByRef(const A& a);
 
-Handle_A getHandleA();
+Handle(A) getHandleA();
 
 Handle_A getNone();
 

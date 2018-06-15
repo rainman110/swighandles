@@ -110,7 +110,7 @@ Handle_Standard_Transient getHandleTransient()
     return new Standard_Transient();
 }
 
-Handle_A Handle_A::DownCast(const Handle_Standard_Transient& t)
+void doWithC(const C &)
 {
-    return dynamic_cast<A*>(const_cast<Standard_Transient*>(t.Access()));
+    printf("Do With C called\n");
 }
