@@ -30,20 +30,6 @@ void IncRef(Standard_Transient& a) {
 
 %define WRAP_OCC_TRANSIENT_TYPE(CONST, TYPE)
 
-// This two functions are just for backwards compatibilty
-%extend TYPE {
-%pythoncode {
-    def GetHandle(self):
-        return self
-
-    def GetObject(self):
-        return self
-
-    def IsNull():
-      return self is None
-   }
-}
-
 %naturalvar TYPE;
 %naturalvar Handle_ ## TYPE;
 
@@ -118,6 +104,22 @@ void IncRef(Standard_Transient& a) {
   %set_output(SWIG_NewPointerObj(%as_voidptr(smartresult), $descriptor(Handle_ ## TYPE *), SWIG_POINTER_OWN));
 }
 
+// Typecheck typemaps
+// Note: SWIG_ConvertPtr with void ** parameter set to 0 instead of using SWIG_ConvertPtrAndOwn, so that the casting 
+// function is not called thereby avoiding a possible smart pointer copy constructor call when casting up the inheritance chain.
+%typemap(typecheck,precedence=SWIG_TYPECHECK_POINTER,noblock=1) 
+                      TYPE CONST,
+                      TYPE CONST &,
+                      TYPE CONST *,
+                      TYPE *CONST&,
+                      Handle_ ## TYPE,
+                      Handle_ ## TYPE &,
+                      Handle_ ## TYPE *,
+                      Handle_ ## TYPE *& {
+  int res = SWIG_ConvertPtr($input, 0, $descriptor(Handle_ ## TYPE *), 0);
+  $1 = SWIG_CheckState(res);
+}
+
 
 %enddef
 
@@ -145,13 +147,30 @@ void IncRef(Standard_Transient& a) {
             return Handle_ ## TYPE ## ::DownCast(t);
         }
     %}
+    
+    // This two functions are just for backwards compatibilty
+    %extend TYPE {
+      %pythoncode {
+        def GetHandle(self):
+            return self
+    
+        def GetObject(self):
+            return self
+    
+        def IsNull():
+          return self is None
 
-    // Allow to use e.g. Handle_Geom_Curve.DownCast(curve)
-    %pythoncode {
-        class Handle_ ## TYPE():
-            @staticmethod
-            def DownCast(t):
-                return Handle_ ## TYPE ## _DownCast(t)
+        @staticmethod
+        def DownCast(t):
+          return Handle_ ## TYPE ## _DownCast(t)
+       }
     }
 
+
+%enddef
+
+%define %make_alias(TYPE)
+    %pythoncode {
+        Handle_ ## TYPE = TYPE
+    }
 %enddef
