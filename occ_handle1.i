@@ -104,6 +104,15 @@ void IncRef(Standard_Transient& a) {
   %set_output(SWIG_NewPointerObj(%as_voidptr(smartresult), $descriptor(Handle_ ## TYPE *), SWIG_POINTER_OWN));
 }
 
+%typemap(in, numinputs = 0) Handle_ ## TYPE& (Handle_ ## TYPE temp){
+    $1 = &temp;
+}
+
+%typemap(argout) Handle_ ## TYPE& {
+    Handle_ ## TYPE *smartresult = !$1->IsNull() ? new Handle_ ## TYPE(*$1) : 0;
+    $result = SWIG_Python_AppendOutput($result, SWIG_NewPointerObj(%as_voidptr(smartresult), $descriptor(Handle_ ## TYPE *), SWIG_POINTER_OWN));
+}
+
 // Typecheck typemaps
 // Note: SWIG_ConvertPtr with void ** parameter set to 0 instead of using SWIG_ConvertPtrAndOwn, so that the casting 
 // function is not called thereby avoiding a possible smart pointer copy constructor call when casting up the inheritance chain.

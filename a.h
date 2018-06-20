@@ -91,4 +91,6 @@ A getCopyA();
 
 A* createA();
 
+void createAHandle(Handle_A& a);
+
 #endif // A_H

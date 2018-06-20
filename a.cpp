@@ -114,3 +114,8 @@ void doWithC(const C &)
 {
     printf("Do With C called\n");
 }
+
+void createAHandle(Handle_A& out)
+{
+    out = new A("CreateHandleA");
+}
