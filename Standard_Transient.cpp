@@ -3,9 +3,9 @@
 #include <cstdio>
 #include <cstdarg>
 
-namespace
-{
-//#define DEBUG
+
+int Standard_Transient::n_alive = 0;
+
 void write_log(const char* format, ...)
 {
 #ifdef DEBUG
@@ -17,7 +17,7 @@ void write_log(const char* format, ...)
     va_end(args);
 #endif
 }
-}
+
 
 Standard_Transient::Standard_Transient()
 {
@@ -25,6 +25,7 @@ Standard_Transient::Standard_Transient()
     count = 0;
     RefCount();
     alive = new bool(true);
+    n_alive++;
 }
 
 Standard_Transient::Standard_Transient(const Standard_Transient& other)
@@ -32,6 +33,7 @@ Standard_Transient::Standard_Transient(const Standard_Transient& other)
     write_log("Standard_Transient::Standard_Transient(const Standard_Transient&)\n");
     count = 0;
     alive = new bool(true);
+    n_alive++;
 }
 
 Standard_Transient::~Standard_Transient()
@@ -40,13 +42,19 @@ Standard_Transient::~Standard_Transient()
 
     *alive = false;
     delete alive;
-    alive = NULL;
+    alive = nullptr;
+    n_alive--;
 }
 
 int Standard_Transient::RefCount()
 {
     write_log("  Standard_Transient::RefCount()=%d\n", count);
     return count;
+}
+
+int Standard_Transient::GetNumAlive()
+{
+    return n_alive;
 }
 
 void Standard_Transient::IncRefs()
@@ -70,79 +78,5 @@ Standard_Transient& Standard_Transient::operator=(const Standard_Transient& othe
     return *this;
 }
 
-Handle_Standard_Transient::Handle_Standard_Transient()
-    : a(0)
-{
-    write_log("Handle_Standard_Transient::Handle_Standard_Transient()\n");
-}
 
-Handle_Standard_Transient::Handle_Standard_Transient(Standard_Transient* a)
-{
-    write_log("Handle_Standard_Transient::Handle_Standard_Transient(Handle_Standard_Transient* h)\n");
-    this->a = a;
-    if (a) {
-        a->IncRefs();
-    }
-}
 
-Handle_Standard_Transient::Handle_Standard_Transient(const Handle_Standard_Transient& h)
-{
-    write_log("Handle_Standard_Transient::Handle_Standard_Transient(const Handle_Standard_Transient &h)\n");
-    a = h.a;
-    if (a) {
-        a->IncRefs();
-    }
-}
-
-Handle_Standard_Transient& Handle_Standard_Transient::operator=(const Handle_Standard_Transient& h)
-{
-    write_log("Handle_Standard_Transient &Handle_Standard_Transient::operator=(const Handle_Standard_Transient &h)\n");
-    a = h.a;
-    if (a) {
-        a->IncRefs();
-    }
-    return *this;
-}
-
-bool Handle_Standard_Transient::IsNull() const
-{
-    return a == NULL;
-}
-
-Handle_Standard_Transient::~Handle_Standard_Transient()
-{
-    write_log("Handle_Standard_Transient::~Handle_Standard_Transient()\n");
-    if (a) {
-        a->DecRefs();
-        if (a->RefCount() == 0) {
-            write_log("Delete Standard_Transient from Handle_Standard_Transient::~Handle_Standard_Transient()\n");
-            delete a;
-            a = NULL;
-        }
-    }
-}
-
-Standard_Transient* Handle_Standard_Transient::Access()
-{
-    return a;
-}
-
-const Standard_Transient* Handle_Standard_Transient::Access() const
-{
-    return a;
-}
-
-Standard_Transient* Handle_Standard_Transient::operator->()
-{
-    return Access();
-}
-
-Standard_Transient& Handle_Standard_Transient::operator*()
-{
-    return *Access();
-}
-
-const Standard_Transient& Handle_Standard_Transient::operator*() const
-{
-    return *a;
-}

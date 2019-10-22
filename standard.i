@@ -2,21 +2,22 @@
 
 %include "std_string.i"
 %include "occ_handle1.i"
-%include "std_shared_ptr.i"
 
 %{
 #include "a.h"
 %}
 
-%add_missing_handle(C, Standard_Transient)
+#define Handle(CLS) opencascade::handle<CLS>
+#define DEFINE_STANDARD_HANDLE(A, ___) typedef opencascade::handle<A> Handle_ ## A;
+
 %wrap_handle(Standard_Transient)
 %wrap_handle(A)
 %wrap_handle(C)
+%add_missing_handle(D, A)
+%wrap_handle(D)
 
 %include "Standard_Transient.hxx"
 %include "a.h"
 
-%make_alias(Standard_Transient)
 %make_alias(A)
-%make_alias(C)
-
+%make_alias(D)

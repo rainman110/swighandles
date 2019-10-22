@@ -2,10 +2,12 @@
 #define A_H
 
 #include "Standard_Transient.hxx"
+#include "standard_handle.hxx"
 
 #include <cstdio>
-#include <memory>
 #include <string>
+
+using namespace opencascade;
 
 class A : public Standard_Transient
 {
@@ -50,7 +52,7 @@ public:
 
     Handle_A& GetHandleARef();
 
-    Handle_A GetHandleACopy()
+    handle<A> GetHandleACopy()
     {
         return ah;
     }
@@ -65,9 +67,27 @@ private:
     A a;
 };
 
-class C : public Standard_Transient 
+class C : public A
 {
+public:
+    C() : A(){}
+    C(const std::string& s) : A(s) {}
+    virtual ~C();
 };
+
+
+
+class D : public A
+{
+public:
+    D(const std::string& s) : A(s) {}
+    virtual ~D();
+};
+
+
+
+DEFINE_STANDARD_HANDLE(Standard_Transient, Standard_Transient)
+DEFINE_STANDARD_HANDLE(C, A)
 
 void doWithC(const C&);
 
@@ -75,22 +95,29 @@ void doWithC(const C&);
  * Simple function that requires a handle of a
  */
 void simpleFunctionHandle(Handle_A handle);
-void simpleFunctionHandleRef(Handle_A& handle);
+void simpleFunctionHandleRef(const Handle(A)& handle);
+
+inline void acceptTransient(Handle(Standard_Transient) h)
+{
+    printf("acceptTransient\n");
+}
 
 void simpleFunctionByRef(const A& a);
 
 Handle(A) getHandleA();
 
-Handle_A getNone();
+handle<A> getNone();
 
 Handle_Standard_Transient getHandleATransient();
 
-Handle_Standard_Transient getHandleTransient();
+handle<Standard_Transient> getHandleTransient();
+
+Handle(C) getC();
 
 A getCopyA();
 
 A* createA();
 
-void createAHandle(Handle_A& a);
+void createAHandle(handle<A>& a);
 
 #endif // A_H

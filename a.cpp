@@ -3,21 +3,6 @@
 #include <cstdio>
 #include <cstdarg>
 
-namespace
-{
-//#define DEBUG
-void write_log(const char* format, ...)
-{
-#ifdef DEBUG
-    va_list args;
-    va_start(args, format);
-
-    vprintf(format, args);
-
-    va_end(args);
-#endif
-}
-}
 
 A::A(const std::string& v)
     : Standard_Transient()
@@ -39,8 +24,8 @@ void A::DoSomething() const
 
 void simpleFunctionHandle(Handle_A handle)
 {
-    write_log("simpleFunctionHandle(Handle_A handle)\n");
-    if (!handle.IsNull()) {
+    write_log("simpleFunctionHandle(handle<A> handle)\n");
+    if (handle) {
         printf("Value = %s\n", handle->Value().c_str());
         handle->DoSomething();
     }
@@ -49,10 +34,10 @@ void simpleFunctionHandle(Handle_A handle)
     }
 }
 
-void simpleFunctionHandleRef(Handle_A& handle)
+void simpleFunctionHandleRef(const Handle(A)& handle)
 {
-    write_log("simpleFunctionHandleRef(Handle_A& handle)\n");
-    if (!handle.IsNull()) {
+    write_log("simpleFunctionHandleRef(handle<A>& handle)\n");
+    if (handle) {
         printf("Value = %s\n", handle->Value().c_str());
         handle->DoSomething();
     }
@@ -67,9 +52,9 @@ void simpleFunctionByRef(const A& a)
     printf("Value = %s\n", a.Value().c_str());
 }
 
-Handle_A getHandleA()
+Handle(A) getHandleA()
 {
-    Handle_A ah = new A();
+    Handle(A) ah(new A());
     return ah;
 }
 
@@ -94,20 +79,19 @@ Handle_A& ABuilder::GetHandleARef()
     return ah;
 }
 
-Handle_A getNone()
+handle<A> getNone()
 {
-    return Handle_A();
+    return handle<A>();
 }
 
 Handle_Standard_Transient getHandleATransient()
 {
-    Handle_A ah = new A("HandleTransientA");
-    return ah;
+    return new A("HandleTransientA");
 }
 
-Handle_Standard_Transient getHandleTransient()
+handle<Standard_Transient> getHandleTransient()
 {
-    return new Standard_Transient();
+    return handle<Standard_Transient>(new Standard_Transient());
 }
 
 void doWithC(const C &)
@@ -115,7 +99,15 @@ void doWithC(const C &)
     printf("Do With C called\n");
 }
 
-void createAHandle(Handle_A& out)
+void createAHandle(handle<A>& out)
 {
-    out = new A("CreateHandleA");
+    out = (new A("CreateHandleA"));
 }
+
+handle<C> getC()
+{
+    return new C("This is C");
+}
+
+C::~C(){}
+D::~D(){}
