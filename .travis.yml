@@ -11,22 +11,22 @@ git:
 
 matrix:
   include:
-    - env: PYTHON="3.5" CONDA_PY=35 ARCH="x86_64"
+    - env: PYTHON="3.5"
       os: linux
       dist: trusty
-    - env: PYTHON="3.5" CONDA_PY=35 ARCH="x86_64"
+    - env: PYTHON="3.5"
       os: osx
       osx_image: xcode9.4
-    - env: PYTHON="3.6" CONDA_PY=36 ARCH="x86_64"
+    - env: PYTHON="3.6"
       os: linux
       dist: trusty
-    - env: PYTHON="3.6" CONDA_PY=36 ARCH="x86_64"
+    - env: PYTHON="3.6"
       os: osx
       osx_image: xcode9.4
-    - env: PYTHON="3.7" CONDA_PY=37 ARCH="x86_64"
+    - env: PYTHON="3.7"
       os: linux
       dist: trusty
-    - env: PYTHON="3.7" CONDA_PY=37 ARCH="x86_64"
+    - env: PYTHON="3.7" 
       os: osx
       osx_image: xcode9.4
 
@@ -48,7 +48,8 @@ before_install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install swig ninja cmake>=3.14 -c dlr-sc
+  - conda create -n build_env python=$PYTHON swig ninja cmake>=3.14 -c dlr-sc
+  - source activate build_env
 
 script:
   - mkdir build && cd build
