@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.14.0)
 
 
 project (swighandles)
@@ -24,31 +24,32 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(standard STATIC
+add_library(standard_c STATIC
     src/a.cpp
     src/a.h
     src/Standard_Transient.cpp
     src/Standard_Transient.hxx )
-set_property(TARGET standard PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET standard_c PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 set_source_files_properties(src/standard.i PROPERTIES CPLUSPLUS ON DEPENDS src/occ_handle1.i)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
-swig_add_module(standard python src/standard.i)
-swig_link_libraries(standard standard)
+swig_add_library(standard LANGUAGE python SOURCES src/standard.i)
+target_link_libraries(standard standard_c)
 
 
 if (UNIX)
-    set_target_properties(${SWIG_MODULE_standard_REAL_NAME} PROPERTIES COMPILE_FLAGS ${PYTHON_CFLAGS})
-    set_target_properties(${SWIG_MODULE_standard_REAL_NAME} PROPERTIES LINK_FLAGS ${PYTHON_LDFLAGS})
+    set_target_properties(standard PROPERTIES COMPILE_FLAGS ${PYTHON_CFLAGS})
+    set_target_properties(standard PROPERTIES LINK_FLAGS ${PYTHON_LDFLAGS})
 else(UNIX)
-    swig_link_libraries(standard ${PYTHON_LIBRARIES})
+    target_link_libraries(standard ${PYTHON_LIBRARIES})
 endif(UNIX)
 
 add_executable(main src/main.cpp)
-target_link_libraries(main PRIVATE standard)
+target_link_libraries(main PRIVATE standard_c)
 
 add_custom_target(run_python_tests
+    DEPENDS ${SWIG_MODULE_standard_REAL_NAME}
     COMMAND
     ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}
     ${PYTHON_EXECUTABLE}
