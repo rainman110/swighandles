@@ -7,6 +7,10 @@
 #include "a.h"
 %}
 
+namespace opencascade{
+template <typename T>
+class handle;
+}
 #define Handle(CLS) opencascade::handle<CLS>
 #define DEFINE_STANDARD_HANDLE(A, ___) typedef opencascade::handle<A> Handle_ ## A;
 
