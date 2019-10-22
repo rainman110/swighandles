@@ -1,0 +1,59 @@
+sudo: false
+
+language: cpp
+
+cache:
+ apt: true
+
+git:
+  depth: false
+
+
+matrix:
+  include:
+    - env: PYTHON="3.5" CONDA_PY=35 ARCH="x86_64"
+      os: linux
+      dist: trusty
+    - env: PYTHON="3.5" CONDA_PY=35 ARCH="x86_64"
+      os: osx
+      osx_image: xcode9.4
+    - env: PYTHON="3.6" CONDA_PY=36 ARCH="x86_64"
+      os: linux
+      dist: trusty
+    - env: PYTHON="3.6" CONDA_PY=36 ARCH="x86_64"
+      os: osx
+      osx_image: xcode9.4
+    - env: PYTHON="3.7" CONDA_PY=37 ARCH="x86_64"
+      os: linux
+      dist: trusty
+    - env: PYTHON="3.7" CONDA_PY=37 ARCH="x86_64"
+      os: osx
+      osx_image: xcode9.4
+
+# Use miniconda to install binary versions of numpy etc. from continuum
+# analytic's repository. Follows an approach described by Dan Blanchard:
+# https://gist.github.com/dan-blanchard/7045057
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+    fi;
+  - chmod +x miniconda.sh
+  # When we are installing the 32 Bit conda on a 64 Bit system, the miniconda
+  # installer will ask for a "yes" despite the -b flag, so we pipe in a yes
+  - yes | ./miniconda.sh -b -p $HOME/miniconda
+  - export PYTHONUNBUFFERED=1
+  - export PATH="$HOME/miniconda/bin:$HOME/miniconda/lib:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda install swig ninja cmake>=3.14 -c dlr-sc
+
+script:
+  - mkdir build && cd build
+  - cmake -G Ninja ..
+  - cmake --build .
+
+after_success:
+  - cmake --build . --target run_python_tests
